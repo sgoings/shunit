@@ -41,7 +41,7 @@ build-test-container:
 	docker build . -t shunit-test:latest
 
 test:
-	docker run -it -v $(shell pwd):/src shunit-test:latest bash -c "cd /src && make install && shunit.sh -v -t tests -f tunit"
+	docker run -it -v $(shell pwd):/src shunit-test:latest bash -c "cd /src && make install && shunit.sh -v -t tests -f junit > junit_test.xml"
 
 # --- End phony targets
 

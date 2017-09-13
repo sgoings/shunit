@@ -44,11 +44,11 @@ do
 		if [[ "${cmdarg_cfg['verbose']}" == "true" ]]; then
 			mkdir -p /tmp/shunit/
 			tmpfile=$(mktemp /tmp/shunit/$key.XXXX)
-			echo "[$key] Running"
-			$key |& tee ${tmpfile}
+			>&2 echo "[$key] Running" 
+			$key |& tee ${tmpfile} 1>&2
 			ERRFLAG=$?
 			ERR=$(cat ${tmpfile})
-			echo "[$key] Completed"
+			>&2 echo "[$key] Completed"
 			rm -f "${tmpfile}"
 		else
 			ERR=$($key 2>&1)
