@@ -40,14 +40,16 @@ do
     do
 	if [[ "$(type -t $key)" == "function" ]]; then
 	    start=$(date "+%s")
-		mkdir -p /tmp/shunit/
-		tmpfile=$(mktemp /tmp/shunit/$key.XXXX)
+
 		if [[ "${cmdarg_cfg['verbose']}" == "true" ]]; then
+			mkdir -p /tmp/shunit/
+			tmpfile=$(mktemp /tmp/shunit/$key.XXXX)
 			echo "[$key] Running"
 			$key |& tee ${tmpfile}
 			ERRFLAG=$?
 			ERR=$(cat ${tmpfile})
 			echo "[$key] Completed"
+			rm -f "${tmpfile}"
 		else
 			ERR=$($key 2>&1)
 			ERRFLAG=$?
