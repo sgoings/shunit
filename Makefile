@@ -23,7 +23,7 @@ all: ./dist/$(RPM)
 
 # --- PHONY targets
 
-.PHONY: clean srpm rpm gitclean dist
+.PHONY: clean srpm rpm gitclean dist build-test-container test
 clean:
 	rm -f $(DISTFILE)
 	rm -fr dist/shunit-$(VERSION)-$(RELEASE)*
@@ -36,6 +36,12 @@ rpm: ./dist/$(RPM) ./dist/$(SRPM)
 
 gitclean:
 	git clean -df
+
+build-test-container:
+	docker build . -t shunit-test:latest
+
+test:
+	docker run -it -v $(shell pwd):/src shunit-test:latest bash -c "cd /src && make install && shunit.sh -v -t tests -f tunit"
 
 # --- End phony targets
 

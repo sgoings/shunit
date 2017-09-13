@@ -13,11 +13,13 @@ cmdarg_info header "A bash script for unit testing other bash scripts in JUNIT o
 cmdarg_info copyright "(MIT License)"
 cmdarg 'f:' 'format' 'Format to print results in. Valid options are: [junit, tunit]' 'junit' validate_format
 cmdarg 't:' 'tests' 'Directory or single file to test.'
+cmdarg 'v'  'verbose' 'stream test output while running'
 
 cmdarg_parse "$@"
 
 FORMATTER=${cmdarg_cfg['format']}
 
+set -o pipefail
 set -e
 source /usr/lib/${FORMATTER}.sh
 set +e
@@ -38,8 +40,18 @@ do
     do
 	if [[ "$(type -t $key)" == "function" ]]; then
 	    start=$(date "+%s")
-	    ERR=$($key 2>&1)
-	    ERRFLAG=$?
+		mkdir -p /tmp/shunit/
+		tmpfile=$(mktemp /tmp/shunit/$key.XXXX)
+		if [[ "${cmdarg_cfg['verbose']}" == "true" ]]; then
+			echo "[$key] Running"
+			$key |& tee ${tmpfile}
+			ERRFLAG=$?
+			ERR=$(cat ${tmpfile})
+			echo "[$key] Completed"
+		else
+			ERR=$($key 2>&1)
+			ERRFLAG=$?
+		fi
 	    delta=$(($(date "+%s") - $start))
 	    if [[ $ERRFLAG -eq 0 ]]; then
 		${FORMATTER}_testcase "$file" "$key" "$delta"
