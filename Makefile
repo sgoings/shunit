@@ -1,5 +1,5 @@
-VERSION:=$(shell if [ -d .git ] && [ -e gitversion.sh ]; then bash -c 'gitversion.sh | grep "^MAJOR=" | cut -d = -f 2'; else source version.sh &> /dev/null && echo $$MAJOR ; fi)
-RELEASE:=$(shell if [ -d .git ] && [ -e gitversion.sh ]; then bash -c 'gitversion.sh | grep "^BUILD=" | cut -d = -f 2'; else source version.sh &> /dev/null && echo $$BUILD ; fi)
+VERSION:=$(shell if [ -d .git ]; then bash -c 'gitversion.sh | grep "^MAJOR=" | cut -d = -f 2'; else source version.sh && echo $$MAJOR ; fi)
+RELEASE:=$(shell if [ -d .git ]; then bash -c 'gitversion.sh | grep "^BUILD=" | cut -d = -f 2'; else source version.sh && echo $$BUILD ; fi)
 DISTFILE=./dist/shunit-$(VERSION)-$(RELEASE).tar.gz
 SPECFILE=shunit.spec
 ifndef RHEL_VERSION
@@ -10,7 +10,7 @@ ifeq ($(RHEL_VERSION),5)
 endif
 
 ifndef PREFIX
-	PREFIX=
+	PREFIX=''
 endif
 
 RHEL_RELEASE:=$(RELEASE).el$(RHEL_VERSION)
@@ -68,16 +68,16 @@ $(RHEL_DISTFILE): $(DISTFILE)
 	mock --verbose -r epel-$(RHEL_VERSION)-noarch ./dist/$(SRPM) --resultdir ./dist/ --define "version $(VERSION)" --define "release $(RHEL_RELEASE)"
 
 uninstall:
-	rm -f $(PREFIX)/usr/local/lib/junit.sh
-	rm -f $(PREFIX)/usr/local/lib/tunit.sh
-	rm -f $(PREFIX)/usr/local/bin/shunit.sh
+	rm -f $(PREFIX)/usr/lib/junit.sh
+	rm -f $(PREFIX)/usr/lib/tunit.sh
+	rm -f $(PREFIX)/usr/bin/shunit.sh
 
 install:
-	mkdir -p $(PREFIX)/usr/local/bin
-	mkdir -p $(PREFIX)/usr/local/lib
-	install ./bin/shunit.sh $(PREFIX)/usr/local/bin/shunit.sh
-	install ./lib/junit.sh $(PREFIX)/usr/local/lib/junit.sh
-	install ./lib/tunit.sh $(PREFIX)/usr/local/lib/tunit.sh
+	mkdir -p $(PREFIX)/usr/bin
+	mkdir -p $(PREFIX)/usr/lib
+	install ./bin/shunit.sh $(PREFIX)/usr/bin/shunit.sh
+	install ./lib/junit.sh $(PREFIX)/usr/lib/junit.sh
+	install ./lib/tunit.sh $(PREFIX)/usr/lib/tunit.sh
 
 MANIFEST:
 	echo /usr/bin/shunit.sh > MANIFEST
