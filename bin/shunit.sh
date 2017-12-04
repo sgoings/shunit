@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-source /usr/local/lib/cmdarg.sh
+source /usr/lib/cmdarg.sh
 
 function validate_format
 {
