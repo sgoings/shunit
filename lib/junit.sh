@@ -102,6 +102,11 @@ EOF
     failtype="$4"
     failmsg="$5"
     cdata="$6"
+
+    if command -v xmlstarlet &> /dev/null ; then
+        cdata="$(echo "${cdata}" | xmlstarlet esc)"
+    fi
+
     SHUNIT_TESTS=$(expr $SHUNIT_TESTS + 1)
     echo '    <testcase classname="'$classname'" time="'$elapsed'" name="'$testname'">' >> /tmp/$$.junit
     if [ "$failtype" != "" ]; then
